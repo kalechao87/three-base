@@ -1,0 +1,24 @@
+{
+  "name": "three-base",
+  "version": "1.0.0",
+  "description": "Three.js base",
+  "main": "index.js",
+  "repository": "git@github.com:kalechao87/three-base.git",
+  "author": "kalechao87 <kalechao@outlook.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "webpack-dev-server --env.dev",
+    "production": "webpack -p --env.production"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.26.0",
+    "eslint": "^4.7.1",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-plugin-import": "^2.7.0",
+    "html-webpack-plugin": "^2.30.1",
+    "webpack": "^3.6.0"
+  }
+}
