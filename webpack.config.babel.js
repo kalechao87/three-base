@@ -76,4 +76,10 @@ export default (env = defaultEnv) => ({
     new CleanWebpackPlugin(['dist']),
   ],
   devtool: env.dev ? 'cheap-module-eval-source-map' : 'cheap-module-source-map',
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true,
+    port: 9000,
+    open: true,
+  },
 });

@@ -7,7 +7,7 @@
   "author": "kalechao87 <kalechao@outlook.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "webpack-dev-server --env.dev",
+    "dev": "webpack-dev-server --env.dev --color",
     "production": "webpack -p --env.production"
   },
   "devDependencies": {
@@ -26,6 +26,7 @@
     "postcss-loader": "^2.0.6",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
-    "webpack": "^3.6.0"
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.8.2"
   }
 }
