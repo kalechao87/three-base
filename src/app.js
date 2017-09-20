@@ -1,4 +1,5 @@
 import './scss/main.scss';
 
-const root = document.querySelector('#root');
-root.innerHTML = '<p>Hello webpack</p>';
+const root = document.createElement('div');
+root.innerHTML = 'Hello, Three';
+document.body.appendChild(root);

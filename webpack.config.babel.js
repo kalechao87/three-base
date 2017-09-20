@@ -65,6 +65,44 @@ export default (env = defaultEnv) => ({
             fallback: 'style-loader',
           }),
       },
+
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: { limit: 8192, name: '[name].[ext]', outputPath: 'images/' },
+          },
+          {
+            loader: 'img-loader',
+            options: {
+              enabled: env.production,
+              gifsicle: {
+                interlaced: false,
+              },
+              mozjpeg: {
+                progressive: true,
+                arithmetic: false,
+              },
+              optipng: false, // disabled
+              pngquant: {
+                floyd: 0.5,
+                speed: 2,
+              },
+              svgo: {
+                plugins: [{ removeTitle: true }, { convertPathData: false }],
+              },
+            },
+          },
+        ],
+      },
+
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: 'html-loader',
+        },
+      },
     ],
   },
   plugins: [
