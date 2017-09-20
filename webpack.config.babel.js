@@ -9,10 +9,17 @@ const defaultEnv = {
 };
 
 export default (env = defaultEnv) => ({
+  target: 'web',
   entry: path.join(__dirname, 'src/app.js'),
   output: {
     filename: '[name].[chunkhash:8].bundle.js',
     path: path.join(__dirname, 'dist'),
+  },
+  resolve: {
+    extensions: ['.js', '.json', '.scss'],
+    alias: {
+      'three-extras': path.resolve(__dirname, 'node_modules/three/examples/js/'),
+    },
   },
   module: {
     rules: [
