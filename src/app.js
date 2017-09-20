@@ -118,9 +118,17 @@ class Application {
   }
 }
 
-(() => {
-  const app = new Application({
-    // container: document.getElementById('canvas-container'),
-  });
-  console.log(app);
-})();
+// (() => {
+//   const app = new Application({
+//     // container: document.getElementById('canvas-container'),
+//   });
+//   console.log(app);
+// })();
+
+function startApp() {
+  const app = document.createElement('div');
+  app.setAttribute('id', 'app');
+  document.body.appendChild(app);
+}
+
+startApp();
