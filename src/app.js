@@ -3,6 +3,8 @@ import Detector from 'three-extras/Detector';
 import DAT from 'three-extras/libs/dat.gui.min';
 import Stats from 'three-extras/libs/stats.min';
 import OrbitControls from 'imports-loader?THREE=three!exports-loader?THREE.OrbitControls!three-extras/controls/OrbitControls'; // eslint-disable-line import/no-webpack-loader-syntax
+
+import createEarth from './components/earth/earth';
 import './scss/main.scss';
 
 class Application {
@@ -37,13 +39,23 @@ class Application {
   }
 
   init() {
-    this.scene = new THREE.Scene();
+    this.createScene();
     this.setupRenderer();
     this.setupCamera();
+    this.setupLights();
     this.setupControls();
     this.setupHelpers();
     this.setupGUI();
     this.setupStats();
+
+    this.createEarth();
+  }
+
+  createScene() {
+    this.scene = new THREE.Scene();
+    this.earthGroup = new THREE.Group();
+
+    this.scene.add(this.earthGroup);
   }
 
   render() {
@@ -75,12 +87,29 @@ class Application {
     this.camera.lookAt(this.scene.position);
   }
 
+  setupLights() {
+    // directional light
+    this.dirLight = new THREE.DirectionalLight(0x4682b4, 1); // steelblue
+    this.dirLight.position.set(120, 30, -200);
+    this.dirLight.castShadow = true;
+    this.dirLight.shadow.camera.near = 10;
+    this.scene.add(this.dirLight);
+    // spotlight
+    this.spotLight = new THREE.SpotLight(0xffaa55);
+    this.spotLight.position.set(120, 30, 0);
+    this.spotLight.castShadow = true;
+    this.dirLight.shadow.camera.near = 10;
+    this.scene.add(this.spotLight);
+    // const ambientLight = new THREE.AmbientLight(0xffaa55);
+    // this.scene.add(ambientLight);
+  }
+
   setupControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enabled = true;
     this.controls.maxDistance = 1500;
     this.controls.minDistance = 0;
-    this.controls.autoRotate = true;
+    // this.controls.autoRotate = true;
   }
 
   setupHelpers() {
@@ -90,6 +119,17 @@ class Application {
     // XYZ axes helper (XYZ axes are RGB colors, respectively)
     const axisHelper = new THREE.AxisHelper(75);
     this.scene.add(axisHelper);
+
+    // directional light helper + shadow camera helper
+    const dirLightHelper = new THREE.DirectionalLightHelper(this.dirLight, 10);
+    this.scene.add(dirLightHelper);
+    const dirLightCameraHelper = new THREE.CameraHelper(this.dirLight.shadow.camera);
+    this.scene.add(dirLightCameraHelper);
+    // spot light helper + shadow camera helper
+    const spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
+    this.scene.add(spotLightHelper);
+    const spotLightCameraHelper = new THREE.CameraHelper(this.spotLight.shadow.camera);
+    this.scene.add(spotLightCameraHelper);
   }
 
   setupGUI() {
@@ -116,19 +156,24 @@ class Application {
     this.stats.showPanel(0);
     this.container.appendChild(this.stats.dom);
   }
+
+  createEarth() {
+    const earth = createEarth();
+    this.earthGroup.add(earth);
+  }
 }
 
-// (() => {
-//   const app = new Application({
-//     // container: document.getElementById('canvas-container'),
-//   });
-//   console.log(app);
-// })();
+(() => {
+  const app = new Application({
+    container: document.getElementById('canvas-container'),
+  });
+  console.log(app);
+})();
 
-function startApp() {
-  const app = document.createElement('div');
-  app.setAttribute('id', 'app');
-  document.body.appendChild(app);
-}
+// function startApp() {
+//   const app = document.createElement('div');
+//   app.setAttribute('id', 'app');
+//   document.body.appendChild(app);
+// }
 
-startApp();
+// startApp();
