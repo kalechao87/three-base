@@ -8,7 +8,7 @@ loader.crossOrigin = '';
 
 export default function createEath() {
   return new Mesh(
-    new SphereGeometry(50, 32, 32),
+    new SphereGeometry(5, 32, 32),
     new MeshPhongMaterial({
       map: loader.load(imageEarth),
       bumpMap: loader.load(earthBump),

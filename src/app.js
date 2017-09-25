@@ -5,12 +5,17 @@ import Stats from 'three-extras/libs/stats.min';
 import OrbitControls from 'imports-loader?THREE=three!exports-loader?THREE.OrbitControls!three-extras/controls/OrbitControls'; // eslint-disable-line import/no-webpack-loader-syntax
 
 import createEarth from './components/earth/earth';
+import createCloud from './components/earth/cloud';
 import './scss/main.scss';
 
 class Application {
   constructor(opts = {}) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+
+    this.autoRotate = false;
+    this.rotationSpeed = 0.001;
+    this.cloudSpeed = -0.0003;
 
     if (opts.container) {
       this.container = opts.container;
@@ -49,6 +54,7 @@ class Application {
     this.setupStats();
 
     this.createEarth();
+    this.createCloud();
   }
 
   createScene() {
@@ -61,6 +67,7 @@ class Application {
   render() {
     this.stats.begin();
     // monitored code goes
+    this.animate();
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
 
@@ -78,38 +85,42 @@ class Application {
   }
 
   setupCamera() {
-    const fov = 75;
+    const fov = 40;
     const aspect = this.width / this.height;
     const near = 0.1;
     const far = 10000;
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    this.camera.position.set(100, 100, 100);
-    this.camera.lookAt(this.scene.position);
+    this.camera.position.set(3.55, 0, -28);
+    this.scene.add(this.camera); // this is required cause there is a light under camera
+    // this.camera.lookAt(this.scene.position);
   }
 
   setupLights() {
-    // directional light
-    this.dirLight = new THREE.DirectionalLight(0x4682b4, 1); // steelblue
-    this.dirLight.position.set(120, 30, -200);
-    this.dirLight.castShadow = true;
-    this.dirLight.shadow.camera.near = 10;
-    this.scene.add(this.dirLight);
     // spotlight
-    this.spotLight = new THREE.SpotLight(0xffaa55);
-    this.spotLight.position.set(120, 30, 0);
-    this.spotLight.castShadow = true;
-    this.dirLight.shadow.camera.near = 10;
+    this.spotLight = new THREE.SpotLight(0xffffff);
+    this.spotLight.position.set(-26, 11, -11);
+    this.spotLight.angle = 0.2;
+    this.spotLight.castShadow = false;
+    this.spotLight.penumbra = 0.4;
+    this.spotLight.distance = 124;
+    this.spotLight.decay = 1;
+    this.spotLight.shadow.camera.near = 50;
+    this.spotLight.shadow.camera.far = 200;
+    this.spotLight.shadow.camera.fov = 35;
+    this.spotLight.shadow.mapSize.height = 1024;
+    this.spotLight.shadow.mapSize.width = 1024;
     this.scene.add(this.spotLight);
-    // const ambientLight = new THREE.AmbientLight(0xffaa55);
-    // this.scene.add(ambientLight);
+    this.ambientLight = new THREE.AmbientLight(0x393939);
+    this.camera.add(this.ambientLight);
   }
 
   setupControls() {
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera);
+    this.controls.rotateSpeed = 0.3;
+    this.controls.autoRotate = false;
+    this.controls.enableZoom = false;
+    this.controls.enablePan = false;
     this.controls.enabled = true;
-    this.controls.maxDistance = 1500;
-    this.controls.minDistance = 0;
-    // this.controls.autoRotate = true;
   }
 
   setupHelpers() {
@@ -120,11 +131,11 @@ class Application {
     const axisHelper = new THREE.AxisHelper(75);
     this.scene.add(axisHelper);
 
-    // directional light helper + shadow camera helper
-    const dirLightHelper = new THREE.DirectionalLightHelper(this.dirLight, 10);
-    this.scene.add(dirLightHelper);
-    const dirLightCameraHelper = new THREE.CameraHelper(this.dirLight.shadow.camera);
-    this.scene.add(dirLightCameraHelper);
+    // // directional light helper + shadow camera helper
+    // const dirLightHelper = new THREE.DirectionalLightHelper(this.dirLight, 10);
+    // this.scene.add(dirLightHelper);
+    // const dirLightCameraHelper = new THREE.CameraHelper(this.dirLight.shadow.camera);
+    // this.scene.add(dirLightCameraHelper);
     // spot light helper + shadow camera helper
     const spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
     this.scene.add(spotLightHelper);
@@ -160,6 +171,25 @@ class Application {
   createEarth() {
     const earth = createEarth();
     this.earthGroup.add(earth);
+  }
+
+  createCloud() {
+    const cloud = createCloud();
+    this.earthGroup.add(cloud);
+    this.cloud = cloud;
+  }
+
+  animate(rotationSpeed = this.rotationSpeed, cloudSpeed = this.cloudSpeed) {
+    if (this.autoRotate) {
+      this.camera.position.x =
+        this.camera.position.x * Math.cos(rotationSpeed) -
+        this.camera.position.z * Math.sin(rotationSpeed);
+      this.camera.position.z =
+        this.camera.position.z * Math.cos(rotationSpeed) +
+        this.camera.position.x * Math.sin(rotationSpeed);
+    }
+
+    this.cloud.rotation.y += cloudSpeed;
   }
 }
 
